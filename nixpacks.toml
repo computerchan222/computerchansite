@@ -5,4 +5,4 @@ nixPkgs = ["jdk17", "maven"]
 cmds = ["cd backend && mvn clean package -DskipTests"]
 
 [start]
-cmd = "java -jar backend/target/backend-1.0.0.jar --spring.profiles.active=prod --server.port=$PORT"
+cmd = "java -Dspring.profiles.active=prod -Dserver.port=$PORT -jar backend/target/backend-1.0.0.jar"
