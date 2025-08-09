@@ -1,2 +1,23 @@
 apache-maven-3.9.5/
 maven.zip
+
+# Maven build artifacts
+backend/target/
+backend/src/main/resources/static/
+**/target/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

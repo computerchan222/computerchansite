@@ -80,11 +80,7 @@ public class AuthController {
         successResponse.put("profileBackground", user.getProfileBackground());
         successResponse.put("profileBadge", user.getProfileBadge());
         
-        // Add NFT image URL if they have a primary NFT
-        if (user.getPrimaryNftId() != null) {
-            // Assuming your NFT images are stored at /assets/nfts/{id}.png
-            successResponse.put("nftImageUrl", "/assets/nfts/" + user.getPrimaryNftId() + ".png");
-        }
+        // NFT images are served from IPFS - frontend handles the URL construction
         
         return ResponseEntity.ok(successResponse);
     }
@@ -104,9 +100,7 @@ public class AuthController {
         profile.put("holderTier", user.getHolderTier());
         profile.put("profileBackground", user.getProfileBackground());
         
-        if (user.getPrimaryNftId() != null) {
-            profile.put("nftImageUrl", "/assets/nfts/" + user.getPrimaryNftId() + ".png");
-        }
+        // NFT images are served from IPFS - frontend handles the URL construction
         
         return ResponseEntity.ok(profile);
     }
