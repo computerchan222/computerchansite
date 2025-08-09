@@ -27,16 +27,26 @@ public class NftService {
     
     @PostConstruct
     public void init() {
-        // Create a separate JDBC template for the Subsquid database
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(subsquidDbUrl);
-        dataSource.setUsername(subsquidDbUsername);
-        dataSource.setPassword(subsquidDbPassword);
-        
-        this.subsquidJdbcTemplate = new JdbcTemplate(dataSource);
-        
-        System.out.println("SubsquidNftService initialized with URL: " + subsquidDbUrl);
+        try {
+            // Create a separate JDBC template for the Subsquid database
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName("org.postgresql.Driver");
+            dataSource.setUrl(subsquidDbUrl);
+            dataSource.setUsername(subsquidDbUsername);
+            dataSource.setPassword(subsquidDbPassword);
+            
+            this.subsquidJdbcTemplate = new JdbcTemplate(dataSource);
+            
+            System.out.println("SubsquidNftService initialized with URL: " + subsquidDbUrl);
+            
+            // Test the connection
+            subsquidJdbcTemplate.queryForObject("SELECT 1", Integer.class);
+            System.out.println("Subsquid database connection successful");
+        } catch (Exception e) {
+            System.err.println("Warning: Could not connect to Subsquid database: " + e.getMessage());
+            System.err.println("NFT functionality will be limited. Using fallback data.");
+            this.subsquidJdbcTemplate = null;
+        }
     }
     
     /**
@@ -50,6 +60,11 @@ public class NftService {
      * Get the count of NFTs owned by a wallet
      */
     public int getNftCount(String walletAddress) {
+        if (subsquidJdbcTemplate == null) {
+            System.out.println("Subsquid database not available, returning 0 NFT count");
+            return 0;
+        }
+        
         try {
             String sql = "SELECT COUNT(*) FROM nft_owners WHERE LOWER(owner_id) = LOWER(?)";
             Integer count = subsquidJdbcTemplate.queryForObject(sql, Integer.class, walletAddress);
@@ -89,6 +104,14 @@ public class NftService {
     public NftHolderInfo getNftHolderInfo(String walletAddress) {
         NftHolderInfo info = new NftHolderInfo();
         info.setWalletAddress(walletAddress);
+        
+        if (subsquidJdbcTemplate == null) {
+            System.out.println("Subsquid database not available, returning empty NFT info for: " + walletAddress);
+            info.setNftCount(0);
+            info.setHasNft(false);
+            info.setNftIds(new ArrayList<>());
+            return info;
+        }
         
         try {
             // Get all NFT IDs owned by this wallet from nft_owners table

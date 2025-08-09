@@ -1,0 +1,8 @@
+[phases.build]
+nixPkgs = ["jdk17"]
+
+[phases.install]
+cmds = ["mvn clean package -DskipTests -f backend/pom.xml"]
+
+[start]
+cmd = "java -Dserver.port=$PORT -jar backend/target/backend-1.0.0.jar"
