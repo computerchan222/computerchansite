@@ -18,7 +18,7 @@ const providerOptions = {
   let currentUserProfile = null;
   
   async function getNonce(address) {
-    const res = await fetch(`http://localhost:8080/api/auth/nonce?address=${address}`);
+    const res = await fetch(`/api/auth/nonce?address=${address}`);
     const data = await res.json();
     return data.nonce;
   }
@@ -32,7 +32,7 @@ const providerOptions = {
 
   async function login(address, message, signature) {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/verify-signature", {
+      const response = await fetch("/api/auth/verify-signature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address, message, signature })
@@ -181,7 +181,7 @@ const providerOptions = {
     if (!currentUserProfile) return;
     
     try {
-      const response = await fetch(`http://localhost:8080/api/user/primary-nft`, {
+      const response = await fetch(`/api/user/primary-nft`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -202,7 +202,7 @@ const providerOptions = {
 
   async function refreshProfile(address) {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/profile/${address}`);
+      const response = await fetch(`/api/auth/profile/${address}`);
       if (response.ok) {
         const profile = await response.json();
         currentUserProfile = profile;
