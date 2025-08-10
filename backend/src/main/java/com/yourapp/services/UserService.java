@@ -18,15 +18,16 @@ public class UserService {
     }
 
     public User createOrUpdateUser(String address) {
-        // Get detailed NFT information from Subsquid database
-        NftHolderInfo nftInfo = nftService.getNftHolderInfo(address);
-        
-        // Convert NFT IDs list to string for storage
-        String nftTokensString = nftInfo.getNftIds().stream()
-            .map(String::valueOf)
-            .collect(Collectors.joining(","));
-        
-        return userRepository.findByAddress(address)
+        try {
+            // Get detailed NFT information from Subsquid database
+            NftHolderInfo nftInfo = nftService.getNftHolderInfo(address);
+            
+            // Convert NFT IDs list to string for storage
+            String nftTokensString = nftInfo.getNftIds().stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+            
+            return userRepository.findByAddress(address)
             .map(user -> {
                 // Update existing user
                 user.setLastLogin(LocalDateTime.now());
@@ -65,6 +66,23 @@ public class UserService {
                 
                 return userRepository.save(newUser);
             });
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error in createOrUpdateUser for address " + address + ": " + e.getMessage());
+            e.printStackTrace();
+            
+            // Return a basic user object to prevent complete failure
+            User fallbackUser = new User();
+            fallbackUser.setAddress(address);
+            fallbackUser.setLastLogin(LocalDateTime.now());
+            fallbackUser.setHasNft(false);
+            fallbackUser.setNftCount(0);
+            fallbackUser.setNftTokens("");
+            fallbackUser.setPrimaryNftId(null);
+            fallbackUser.calculateHolderTier();
+            
+            return fallbackUser;
+        }
     }
     
     public User getUserByAddress(String address) {
