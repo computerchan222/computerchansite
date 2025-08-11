@@ -1,0 +1,10 @@
+﻿{
+  'version': 2,
+  'cleanUrls': true,
+  'rewrites': [
+    {
+      'source': '/api/:path*',
+      'destination': 'https://computerchansite-production.up.railway.app/api/:path*'
+    }
+  ]
+}
