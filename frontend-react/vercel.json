@@ -3,7 +3,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/:path*", 
       "destination": "https://computerchansite-production.up.railway.app/api/:path*"
     }
   ]
