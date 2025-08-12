@@ -2,7 +2,7 @@
 // Production configuration for Vercel deployment
 export const BACKEND_URL = 'https://computerchansite-production.up.railway.app';
 export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/bafybeife2agzsl2xgnljiiqw732nqfhipfhgnyihwlghmj3esimhzngjce';
-export const IPFS_BACKGROUNDS = import.meta.env.VITE_IPFS_BACKGROUNDS || 'YOUR_NEW_IPFS_HASH_FOR_BACKGROUNDS';
+export const IPFS_BACKGROUNDS = 'https://ipfs.io/ipfs/bafybeidiytaoqjauhvxv6cgaotuufptran6a3cuiewhczm4rwd4bx63pze';
 
 // External links
 export const EXTERNAL_LINKS = {
