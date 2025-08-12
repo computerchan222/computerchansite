@@ -177,7 +177,10 @@ export default function Desktop() {
               <div className="text-center py-8">
                 <p className="text-white/60 mb-4">Connect your wallet to view profile</p>
                 <div className="flex justify-center">
-                  <ConnectButton />
+                  <ConnectButton 
+                    chainStatus="none"
+                    showBalance={false}
+                  />
                 </div>
               </div>
             )}
