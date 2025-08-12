@@ -2,8 +2,9 @@ package com.yourapp.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import jakarta.annotation.PostConstruct;
 import java.math.BigInteger;
@@ -28,16 +29,27 @@ public class NftService {
     @PostConstruct
     public void init() {
         try {
-            // Create a separate JDBC template for the Subsquid database
-            DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            dataSource.setDriverClassName("org.postgresql.Driver");
-            dataSource.setUrl(subsquidDbUrl);
-            dataSource.setUsername(subsquidDbUsername);
-            dataSource.setPassword(subsquidDbPassword);
+            // Create a minimal HikariCP connection pool for Subsquid database
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(subsquidDbUrl);
+            config.setUsername(subsquidDbUsername);
+            config.setPassword(subsquidDbPassword);
             
+            // CRITICAL: Minimal connection pool for Supabase limits
+            config.setMaximumPoolSize(1); // Only 1 connection for Subsquid
+            config.setMinimumIdle(0);     // No idle connections
+            config.setConnectionTimeout(30000); // 30 seconds
+            config.setIdleTimeout(600000);      // 10 minutes
+            config.setMaxLifetime(1800000);     // 30 minutes
+            
+            // Additional Supabase optimizations
+            config.setLeakDetectionThreshold(60000); // 1 minute leak detection
+            config.setConnectionTestQuery("SELECT 1");
+            
+            HikariDataSource dataSource = new HikariDataSource(config);
             this.subsquidJdbcTemplate = new JdbcTemplate(dataSource);
             
-            System.out.println("SubsquidNftService initialized with URL: " + subsquidDbUrl);
+            System.out.println("SubsquidNftService initialized with minimal connection pool");
             
             // Test the connection
             subsquidJdbcTemplate.queryForObject("SELECT 1", Integer.class);
